@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace RelaStructures.UT
 {
@@ -14,6 +13,16 @@ namespace RelaStructures.UT
         }
 
         public void MoveAction(ref TestStruct from, ref TestStruct to)
+        {
+            from.Move(ref to);
+        }
+
+        public void ClearActionAdv(ref TestStructAdv obj)
+        {
+            obj.Clear();
+        }
+
+        public void MoveActionAdv(ref TestStructAdv from, ref TestStructAdv to)
         {
             from.Move(ref to);
         }
@@ -59,6 +68,8 @@ namespace RelaStructures.UT
             foreach (int id in ids)
                 if (id != -1)
                     Assert.AreEqual(id, pool.Values[pool.IdsToIndices[id]].X);
+
+            Assert.AreEqual(pool.Count, 15);
         }
 
         [TestMethod]
@@ -97,6 +108,99 @@ namespace RelaStructures.UT
             Assert.IsTrue(pool.Count == 10); // back to 10
             foreach (int id in newids)
                 Assert.AreEqual(0, pool.Values[pool.IdsToIndices[id]].X); // verify that returned structs were cleared
+        }
+
+        [TestMethod]
+        public void ReqAdv10Test()
+        {
+            StructReArray<TestStructAdv> pool = new StructReArray<TestStructAdv>(10, 1000,
+                ClearActionAdv, MoveActionAdv);
+
+            int testpasses = 0;
+            Action testCallback = () => { testpasses++; };
+
+            List<int> ids = new List<int>();
+            for (int i = 0; i < 10; i++)
+            {
+                int id = pool.Request();
+                ids.Add(id);
+                pool.Values[pool.IdsToIndices[id]].Setup(i, testCallback);
+            }
+
+            foreach (int id in ids)
+                Assert.IsFalse(id == -1);
+
+            foreach (int id in ids)
+            {
+                pool.Values[pool.IdsToIndices[id]].Callback();
+            }
+
+            Assert.AreEqual(ids.Count, testpasses);
+        }
+
+        [TestMethod]
+        public void ReqAdvTooManyTest()
+        {
+            StructReArray<TestStructAdv> pool = new StructReArray<TestStructAdv>(10, 1000,
+                ClearActionAdv, MoveActionAdv);
+
+            int testpasses = 0;
+            Action testCallback = () => { testpasses++; };
+
+            List<int> ids = new List<int>();
+            for (int i = 0; i < 15; i++)
+            {
+                int id = pool.Request();
+                ids.Add(id);
+                pool.Values[pool.IdsToIndices[id]].Setup(i, testCallback);
+            }
+
+            foreach (int id in ids)
+                Assert.IsFalse(id == -1);
+
+            foreach (int id in ids)
+            {
+                pool.Values[pool.IdsToIndices[id]].Callback();
+            }
+
+            Assert.AreEqual(ids.Count, testpasses);
+        }
+
+        private static void ClearActionFloat(ref FloatStruct obj)
+        {
+            obj.F = 0;
+        }
+
+        private static void MoveActionFloat(ref FloatStruct from, ref FloatStruct to)
+        {
+            to.F = from.F;
+        }
+
+        [TestMethod]
+        public void SRAOverflow1()
+        {
+            float expected = 1;
+            RelaStructures.StructReArray<FloatStruct> Sample = new RelaStructures.StructReArray<FloatStruct>(10, 20, ClearActionFloat, MoveActionFloat);
+            for (int i = 0; i < Sample.MaxLength; i++)
+            {
+                int index = Sample.Request();
+                Sample.Values[Sample.IdsToIndices[index]] = new FloatStruct(f: expected);
+            }
+            Assert.AreEqual(expected, Sample.Values[0].F);
+        }
+
+        [TestMethod]
+        public void SRAOverflow2()
+        {
+            float expected = 1;
+            RelaStructures.StructReArray<FloatStruct> Sample = new RelaStructures.StructReArray<FloatStruct>(10, 20, ClearActionFloat, MoveActionFloat);
+            for (int i = 0; i < Sample.MaxLength; i++)
+            {
+                int index = Sample.Request();
+                int sampleIndex = Sample.IdsToIndices[index];
+                Sample.Values[sampleIndex] = new FloatStruct(f: expected);
+            }
+            Assert.AreEqual(expected, Sample.Values[10].F);
         }
     }
 }

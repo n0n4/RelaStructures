@@ -83,6 +83,13 @@ namespace RelaStructures
             IdsToIndices = nidtoi;
             IndicesToIds = nitoid;
             Length = newsize;
+            // fill in future ids
+            for (int i = Count; i < Length; i++)
+            {
+                Values[i] = new T();
+                IdsToIndices[i] = i;
+                IndicesToIds[i] = i;
+            }
         }
 
         public void ReturnIndex(int index)
