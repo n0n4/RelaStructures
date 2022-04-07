@@ -21,7 +21,10 @@ namespace RelaStructures
         public int Count { get; private set; } = 0;
         public int Length { get; private set; } = 0;
         public int MaxLength;
-
+        public ref T this[int i]
+        {
+            get { return ref Values[i]; }
+        }
         public StructReArray(int length, int maxlength, ClearDelegate clearAction, MoveDelegate moveAction)
         {
             ClearAction = clearAction;
