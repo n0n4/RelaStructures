@@ -44,7 +44,7 @@ namespace RelaStructures.UT
                 pool[i].X += i;
 
             foreach (int id in ids)
-                Assert.AreEqual(id, pool.ID(id).X);
+                Assert.AreEqual(id, pool.AtId(id).X);
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace RelaStructures.UT
 
             foreach (int id in ids)
                 if (id != -1)
-                    Assert.AreEqual(id, pool.ID(id).X);
+                    Assert.AreEqual(id, pool.AtId(id).X);
 
             Assert.AreEqual(pool.Count, 15);
         }
@@ -89,13 +89,13 @@ namespace RelaStructures.UT
                 pool[i].X += i;
 
             foreach (int id in ids)
-                Assert.AreEqual(id, pool.ID(id).X);
+                Assert.AreEqual(id, pool.AtId(id).X);
 
             for (int i = 5; i < 8; i++)
                 pool.ReturnId(ids[i]); // return 5, 6, and 7
 
             Assert.IsTrue(pool.Count == 7); // down from 10
-            Assert.IsTrue(pool.ID(ids[9]).X == 9); // verify that accessing id9 still works
+            Assert.IsTrue(pool.AtId(ids[9]).X == 9); // verify that accessing id9 still works
 
             // request 3 new structs, to fill back up to 10
             List<int> newids = new List<int>();
@@ -107,7 +107,7 @@ namespace RelaStructures.UT
 
             Assert.IsTrue(pool.Count == 10); // back to 10
             foreach (int id in newids)
-                Assert.AreEqual(0, pool.ID(id).X); // verify that returned structs were cleared
+                Assert.AreEqual(0, pool.AtId(id).X); // verify that returned structs were cleared
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace RelaStructures.UT
             {
                 int id = pool.Request();
                 ids.Add(id);
-                pool.ID(id).Setup(i, testCallback);
+                pool.AtId(id).Setup(i, testCallback);
             }
 
             foreach (int id in ids)
@@ -132,7 +132,7 @@ namespace RelaStructures.UT
 
             foreach (int id in ids)
             {
-                pool.ID(id).Callback();
+                pool.AtId(id).Callback();
             }
 
             Assert.AreEqual(ids.Count, testpasses);
@@ -152,7 +152,7 @@ namespace RelaStructures.UT
             {
                 int id = pool.Request();
                 ids.Add(id);
-                pool.ID(id).Setup(i, testCallback);
+                pool.AtId(id).Setup(i, testCallback);
             }
 
             foreach (int id in ids)
@@ -160,7 +160,7 @@ namespace RelaStructures.UT
 
             foreach (int id in ids)
             {
-                pool.ID(id).Callback();
+                pool.AtId(id).Callback();
             }
 
             Assert.AreEqual(ids.Count, testpasses);
@@ -184,7 +184,7 @@ namespace RelaStructures.UT
             for (int i = 0; i < Sample.MaxLength; i++)
             {
                 int index = Sample.Request();
-                Sample.ID(index) = new FloatStruct(f: expected);
+                Sample.AtId(index) = new FloatStruct(f: expected);
             }
             Assert.AreEqual(expected, Sample[0].F);
         }

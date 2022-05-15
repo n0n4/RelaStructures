@@ -21,14 +21,7 @@ namespace RelaStructures
         public int Count { get; private set; } = 0;
         public int Length { get; private set; } = 0;
         public int MaxLength;
-        public ref T this[int i]
-        {
-            get { return ref Values[i]; }
-        }
-        public ref T ID(int id)
-        {
-            return ref Values[IdsToIndices[id]];
-        }
+
         public StructReArray(int length, int maxlength, ClearDelegate clearAction, MoveDelegate moveAction)
         {
             ClearAction = clearAction;
@@ -177,6 +170,14 @@ namespace RelaStructures
                 int newindex = IdsToIndices[newid];
                 Values[newindex] = range.Values[i];
             }
+        }
+        public ref T this[int i]
+        {
+            get { return ref Values[i]; }
+        }
+        public ref T AtId(int id)
+        {
+            return ref Values[IdsToIndices[id]];
         }
     }
 }
