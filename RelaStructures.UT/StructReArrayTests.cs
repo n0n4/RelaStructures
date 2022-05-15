@@ -41,10 +41,10 @@ namespace RelaStructures.UT
                 Assert.IsFalse(id == -1);
 
             for (int i = 0; i < pool.Count; i++)
-                pool.Values[i].X += i;
+                pool[i].X += i;
 
             foreach (int id in ids)
-                Assert.AreEqual(id, pool.Values[pool.IdsToIndices[id]].X);
+                Assert.AreEqual(id, pool.ID(id).X);
         }
 
         [TestMethod]
@@ -63,11 +63,11 @@ namespace RelaStructures.UT
             }
 
             for (int i = 0; i < pool.Count; i++)
-                pool.Values[i].X += i;
+                pool[i].X += i;
 
             foreach (int id in ids)
                 if (id != -1)
-                    Assert.AreEqual(id, pool.Values[pool.IdsToIndices[id]].X);
+                    Assert.AreEqual(id, pool.ID(id).X);
 
             Assert.AreEqual(pool.Count, 15);
         }
@@ -86,16 +86,16 @@ namespace RelaStructures.UT
                 Assert.IsFalse(id == -1);
 
             for (int i = 0; i < pool.Count; i++)
-                pool.Values[i].X += i;
+                pool[i].X += i;
 
             foreach (int id in ids)
-                Assert.AreEqual(id, pool.Values[pool.IdsToIndices[id]].X);
+                Assert.AreEqual(id, pool.ID(id).X);
 
             for (int i = 5; i < 8; i++)
                 pool.ReturnId(ids[i]); // return 5, 6, and 7
 
             Assert.IsTrue(pool.Count == 7); // down from 10
-            Assert.IsTrue(pool.Values[pool.IdsToIndices[ids[9]]].X == 9); // verify that accessing id9 still works
+            Assert.IsTrue(pool.ID(ids[9]).X == 9); // verify that accessing id9 still works
 
             // request 3 new structs, to fill back up to 10
             List<int> newids = new List<int>();
@@ -107,7 +107,7 @@ namespace RelaStructures.UT
 
             Assert.IsTrue(pool.Count == 10); // back to 10
             foreach (int id in newids)
-                Assert.AreEqual(0, pool.Values[pool.IdsToIndices[id]].X); // verify that returned structs were cleared
+                Assert.AreEqual(0, pool.ID(id).X); // verify that returned structs were cleared
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace RelaStructures.UT
             {
                 int id = pool.Request();
                 ids.Add(id);
-                pool.Values[pool.IdsToIndices[id]].Setup(i, testCallback);
+                pool.ID(id).Setup(i, testCallback);
             }
 
             foreach (int id in ids)
@@ -132,7 +132,7 @@ namespace RelaStructures.UT
 
             foreach (int id in ids)
             {
-                pool.Values[pool.IdsToIndices[id]].Callback();
+                pool.ID(id).Callback();
             }
 
             Assert.AreEqual(ids.Count, testpasses);
@@ -152,7 +152,7 @@ namespace RelaStructures.UT
             {
                 int id = pool.Request();
                 ids.Add(id);
-                pool.Values[pool.IdsToIndices[id]].Setup(i, testCallback);
+                pool.ID(id).Setup(i, testCallback);
             }
 
             foreach (int id in ids)
@@ -160,7 +160,7 @@ namespace RelaStructures.UT
 
             foreach (int id in ids)
             {
-                pool.Values[pool.IdsToIndices[id]].Callback();
+                pool.ID(id).Callback();
             }
 
             Assert.AreEqual(ids.Count, testpasses);
@@ -184,9 +184,9 @@ namespace RelaStructures.UT
             for (int i = 0; i < Sample.MaxLength; i++)
             {
                 int index = Sample.Request();
-                Sample.Values[Sample.IdsToIndices[index]] = new FloatStruct(f: expected);
+                Sample.ID(index) = new FloatStruct(f: expected);
             }
-            Assert.AreEqual(expected, Sample.Values[0].F);
+            Assert.AreEqual(expected, Sample[0].F);
         }
 
         [TestMethod]
@@ -198,9 +198,9 @@ namespace RelaStructures.UT
             {
                 int index = Sample.Request();
                 int sampleIndex = Sample.IdsToIndices[index];
-                Sample.Values[sampleIndex] = new FloatStruct(f: expected);
+                Sample[sampleIndex] = new FloatStruct(f: expected);
             }
-            Assert.AreEqual(expected, Sample.Values[10].F);
+            Assert.AreEqual(expected, Sample[10].F);
         }
     }
 }

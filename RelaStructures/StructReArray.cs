@@ -25,6 +25,10 @@ namespace RelaStructures
         {
             get { return ref Values[i]; }
         }
+        public ref T ID(int id)
+        {
+            return ref Values[IdsToIndices[id]];
+        }
         public StructReArray(int length, int maxlength, ClearDelegate clearAction, MoveDelegate moveAction)
         {
             ClearAction = clearAction;
