@@ -171,5 +171,13 @@ namespace RelaStructures
                 Values[newindex] = range.Values[i];
             }
         }
+        public ref T this[int i]
+        {
+            get { return ref Values[i]; }
+        }
+        public ref T AtId(int id)
+        {
+            return ref Values[IdsToIndices[id]];
+        }
     }
 }
