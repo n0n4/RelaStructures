@@ -16,7 +16,7 @@ namespace RelaStructures.UT
         {
             from.Move(ref to);
         }
-
+        
         public void ClearActionAdv(ref TestStructAdv obj)
         {
             obj.Clear();
@@ -25,6 +25,20 @@ namespace RelaStructures.UT
         public void MoveActionAdv(ref TestStructAdv from, ref TestStructAdv to)
         {
             from.Move(ref to);
+        }
+
+        public void ClearActionArr(ref TestStructArr obj)
+        {
+            obj.Clear();
+        }
+
+        public void MoveActionArr(ref TestStructArr from, ref TestStructArr to)
+        {
+            from.Move(ref to);
+        }
+        public void InitActionArr(ref TestStructArr obj)
+        {
+            obj.Init();
         }
 
         [TestMethod]
@@ -201,6 +215,26 @@ namespace RelaStructures.UT
                 Sample[sampleIndex] = new FloatStruct(f: expected);
             }
             Assert.AreEqual(expected, Sample[10].F);
+        }
+        [TestMethod]
+        public void InitActionTest()
+        {
+            int expected = 256;
+            RelaStructures.StructReArray<TestStructArr> Sample = new RelaStructures.StructReArray<TestStructArr>(10, 20, ClearActionArr, MoveActionArr, InitActionArr);
+            int sampleIndex = Sample.Length / 2;
+            for (int i = 0; i < Sample.Length; i++)
+                Sample.Request();
+            Assert.AreEqual(Sample[sampleIndex].X.Length, expected);
+        }
+        [TestMethod]
+        public void InitActionOverflowTest()
+        {
+            int expected = 256;
+            RelaStructures.StructReArray<TestStructArr> Sample = new RelaStructures.StructReArray<TestStructArr>(10, 20, ClearActionArr, MoveActionArr, InitActionArr);
+            int sampleIndex = (Sample.MaxLength - Sample.Length) / 2 + Sample.Length;
+            for (int i = 0; i < Sample.MaxLength; i++)
+                Sample.Request();
+            Assert.AreEqual(Sample[sampleIndex].X.Length, expected);
         }
     }
 }

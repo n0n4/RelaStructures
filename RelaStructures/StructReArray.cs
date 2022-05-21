@@ -8,24 +8,38 @@ namespace RelaStructures
     {
         public delegate void ClearDelegate(ref T obj);
         public delegate void MoveDelegate(ref T from, ref T to);
+        public delegate void InitDelegate(ref T obj);
 
         public T[] Values;
         public int[] IdsToIndices;
         public int[] IndicesToIds;
-        public ClearDelegate ClearAction; // called when we clear out a struct
-                                          // client should revert target index back to default values
-                                          // e.g. Values[index].X = 0
-        public MoveDelegate MoveAction; // called when we move a struct, args are "values, moving index, target index"
-                                        // what is required here is that the client provide the logic for copying one struct into another
-                                        // e.g. Values[targetIndex].X = Values[movingIndex].X
+        /// <summary>
+        /// <para>Called when we clear out a struct</para>
+        /// <para>Client should revert target index back to default values</para>
+        /// <para>e.g. Values[index].X = 0</para>
+        /// </summary>
+        public ClearDelegate ClearAction;
+        /// <summary>
+        /// <para>Called when we move a struct, args are "values, moving index, target index"</para>
+        /// <para>What is required here is that the client provide the logic for copying one struct into another</para>
+        /// <para>e.g. Values[targetIndex].X = Values[movingIndex].X</para>
+        /// </summary>
+        public MoveDelegate MoveAction;
+        /// <summary>
+        /// <para>called when we construct or resize a struct</para>
+        /// <para>alllows the client to preallocate arrays inside the struct</para>
+        /// <para>e.g. Values[targetIndex].X = new int[256]</para>
+        /// </summary>
+        public InitDelegate InitAction;
         public int Count { get; private set; } = 0;
         public int Length { get; private set; } = 0;
         public int MaxLength;
 
-        public StructReArray(int length, int maxlength, ClearDelegate clearAction, MoveDelegate moveAction)
+        public StructReArray(int length, int maxlength, ClearDelegate clearAction, MoveDelegate moveAction, InitDelegate initAction = null)
         {
             ClearAction = clearAction;
             MoveAction = moveAction;
+            InitAction = initAction;
 
             Length = length;
             MaxLength = maxlength;
@@ -38,6 +52,7 @@ namespace RelaStructures
                 Values[i] = new T();
                 IdsToIndices[i] = i;
                 IndicesToIds[i] = i;
+                InitAction?.Invoke(ref Values[i]);
             }
         }
 
@@ -89,6 +104,7 @@ namespace RelaStructures
                 Values[i] = new T();
                 IdsToIndices[i] = i;
                 IndicesToIds[i] = i;
+                InitAction?.Invoke(ref Values[i]);
             }
         }
 
