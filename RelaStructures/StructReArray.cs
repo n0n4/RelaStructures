@@ -52,7 +52,11 @@ namespace RelaStructures
                 Values[i] = new T();
                 IdsToIndices[i] = i;
                 IndicesToIds[i] = i;
-                InitAction?.Invoke(ref Values[i]);
+            }
+            if (InitAction != null)
+            {
+                for (int i = 0; i < Length; i++)
+                    InitAction.Invoke(ref Values[i]);
             }
         }
 
@@ -104,7 +108,11 @@ namespace RelaStructures
                 Values[i] = new T();
                 IdsToIndices[i] = i;
                 IndicesToIds[i] = i;
-                InitAction?.Invoke(ref Values[i]);
+            }
+            if (InitAction != null)
+            {
+                for (int i = Count; i < Length; i++)
+                    InitAction.Invoke(ref Values[i]);
             }
         }
 
